@@ -2,7 +2,7 @@
   <img width="1371" height="513" alt="guhwall" src="https://github.com/user-attachments/assets/0245a22b-15ef-4371-b629-c95ed2edbe61"/>
 </div>
 
-# guhwall
+---
 
 <h3 align="center">Aesthetic wallpaper manager made for guhwm.</h3>
 
@@ -14,8 +14,6 @@
 
 * **⚙️ Walrs Integration:** Automatically runs walrs to generate color schemes from your wallpapers.  
 * **🎨 Modern UI:** A responsive masonry grid with a translucent, dark-mode aesthetic.
-
----
 
 ## 📦 Installation
 
