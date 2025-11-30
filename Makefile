@@ -39,3 +39,4 @@ uninstall:
 	rm -f $(ICON_DIR)/guhwall.svg
 	rm -f $(DESKTOP_DIR)/guhwall.desktop
 	@echo "Done."
+all: build install
