@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GuhWall + Walrs Installer (Direct Install)
+# guhwall's installer script (Direct Install)
 # ------------------------------------------
 set -e # Exit immediately if a command fails
 
@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-echo -e "${BLUE}:: Initializing GuhWall Installer...${NC}"
+echo -e "${BLUE}:: Initializing guhwall Installer...${NC}"
 
 # 1. Install Build Dependencies
 echo -e "${BLUE}:: Installing system dependencies...${NC}"
@@ -21,7 +21,7 @@ mkdir -p "$BUILD_ROOT"
 cd "$BUILD_ROOT"
 
 # ---------------------------------------------------------
-# PART A: Build Walrs (From Source)
+# PART A: Build Walrs
 # ---------------------------------------------------------
 if command -v walrs &> /dev/null; then
     echo -e "${GREEN}:: Walrs is already installed. Skipping.${NC}"
@@ -39,10 +39,10 @@ else
 fi
 
 # ---------------------------------------------------------
-# PART B: Build GuhWall (From Source)
+# PART B: Build guhwall
 # ---------------------------------------------------------
-echo -e "${BLUE}:: Cloning GuhWall (Tapi-Mandy)...${NC}"
-git clone https://github.com/Tapi-Mandy/guhwall.git
+echo -e "${BLUE}:: Cloning guhwall (Tapi-Mandy)...${NC}"
+git clone https://github.com/Tapi-Mandy/guhwall
 cd guhwall
 
 echo -e "${BLUE}:: Installing Node modules...${NC}"
