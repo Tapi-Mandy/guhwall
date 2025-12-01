@@ -10,44 +10,28 @@
 
 ---
 
-## ✨ Features
-
+# ✨ Features
 * **⚙️ Walrs Integration:** Automatically runs walrs to generate color schemes from your wallpapers.  
 * **🎨 Modern UI:** A responsive masonry grid with a translucent, dark-mode aesthetic.
 
 ## 📦 Installation
-
 ### Build and install from source
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/Tapi-Mandy/guhwall.git
-cd guhwall
+#### Clone the repository:
 ```
-
-2. Install dependencies:
-
-```bash
-npm install
+git clone https://github.com/Tapi-Mandy/guhwall && cd guhwall && chmod +x install.sh && ./install.sh
 ```
-
-3. Build and install the app with a single command:
-
-```bash
-sudo make all
+### Alternatives:
+#### Curl the installer
 ```
-
-This will build the app and install it system-wide, including the binary, desktop shortcut, and icon.
-
-### Alternative: Separate build and install steps
-
-```bash
-make build       # Build the app
+curl -sS https://raw.githubusercontent.com/Tapi-Mandy/guhwall/main/install.sh | bash
+```
+#### Separate build and install steps
+```
+make build         # Build the app
 sudo make install  # Install the app system-wide
 ```
 
-### Uninstalling
+## 🗑️ Uninstalling
 
 To uninstall \`guhwall\`, run:
 
@@ -55,12 +39,4 @@ To uninstall \`guhwall\`, run:
 sudo make uninstall
 ```
 
-This removes installed files and shortcuts.
-
----
-
-## 📄 License
-
-MIT License
-
----
+### 📄 MIT License
