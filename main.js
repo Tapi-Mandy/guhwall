@@ -22,7 +22,7 @@ const CONFIG_FILE = path.join(app.getPath('userData'), 'config.json');
 
 function getLastPath() {
     // 1. DEFAULT PATH (System)
-    const defaultPath = '/usr/share/backgrounds/guhwm_wallpapers';
+    const defaultPath = '/usr/share/backgrounds/Wallpapers';
     
     try {
         if (fs.existsSync(CONFIG_FILE)) {
