@@ -12,7 +12,7 @@
 
 # ✨ Features
 * **⚙️ Walrs Integration:** Automatically runs walrs to generate color schemes from your wallpapers.
-* **🪟 GTK Configuration:** Uses the color scheme from Walrs and works with gtk3/4.
+* **🪟 GTK Configuration:** Uses the color scheme from Walrs and works with GTK3/4.
 * **🎨 Modern UI:** A responsive masonry grid with a translucent, dark-mode aesthetic.
 
 ## 📦 Installation
