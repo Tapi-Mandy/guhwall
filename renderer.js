@@ -26,20 +26,23 @@ async function loadImages(dir) {
         return;
     }
 
-    images.forEach(imgData => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        const filename = path.basename(imgData);
-        
-        card.innerHTML = `
-            <img src="${imgData}" loading="lazy">
-            <div class="card-overlay">
-                <div class="filename">${filename}</div>
-            </div>
-        `;
-        card.onclick = () => applyWallpaper(imgData);
-        gallery.appendChild(card);
-    });
+images.forEach(imgData => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    
+    const filename = path.basename(imgData);
+    const fileUrl = `file://${imgData.split(path.sep).map(encodeURIComponent).join(path.sep)}`;
+
+    card.innerHTML = `
+        <img src="${fileUrl}" loading="lazy">
+        <div class="card-overlay">
+            <div class="filename">${filename}</div>
+        </div>
+    `;
+
+    card.onclick = () => applyWallpaper(imgData);
+    gallery.appendChild(card);
+});
 }
 
 btnFolder.onclick = async () => {
