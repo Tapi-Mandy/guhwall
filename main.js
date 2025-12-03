@@ -53,7 +53,7 @@ function createWindow() {
         // 2. WINDOW SIZE (Fixed here)
         width: 1200,
         height: 800,
-        title: "GuhWall",
+        title: "guhwall",
         transparent: true,
         backgroundColor: '#00000000',
         webPreferences: {
@@ -88,16 +88,26 @@ ipcMain.handle('select-folder', async () => {
 
 ipcMain.handle('apply-wallpaper', async (event, imagePath) => {
     return new Promise((resolve, reject) => {
-        // 3. RUN WALRS
+        console.log(`Setting wallpaper: ${imagePath}`);
+
+        // 1. Run Walrs
+        // We add -q (quiet) to clean up output
         exec(`walrs -i "${imagePath}"`, (error, stdout, stderr) => {
             if (error) console.error("Walrs error:", stderr);
 
-            // 4. FORCE SCALE (FEH)
-            exec(`feh --bg-scale "${imagePath}"`, (fehErr) => {
+            // 2. FORCE XRESOURCES UPDATE (Fixes DWM Bar)
+            // Walrs creates the file, but we explicitly tell X11 to merge it now.
+            // We use the standard wal location ~/.cache/wal/colors.Xresources
+            const home = os.homedir();
+            exec(`xrdb -merge "${home}/.cache/wal/colors.Xresources"`, (xrdbErr) => {
                 
-                // 5. INPUT FIX SCRIPT
-                exec(INPUT_FIX_SCRIPT, { shell: '/bin/bash' }, (scriptErr) => {
-                    resolve("Success");
+                // 3. FORCE STRETCH (Fixes Wallpaper)
+                exec(`feh --bg-fill "${imagePath}"`, (fehErr) => {
+                    
+                    // 4. INPUT FIX (Fixes Mouse/Keyboard)
+                    exec(INPUT_FIX_SCRIPT, { shell: '/bin/bash' }, (scriptErr) => {
+                        resolve("Success");
+                    });
                 });
             });
         });
