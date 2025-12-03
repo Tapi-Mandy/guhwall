@@ -14,7 +14,7 @@ echo -e "${BLUE}:: Initializing guhwall System Installer...${NC}"
 # PART 1: System Dependencies
 # ---------------------------------------------------------
 echo -e "${BLUE}:: Installing system dependencies...${NC}"
-sudo pacman -S --needed --noconfirm base-devel git rust cargo nodejs npm feh xorg-xinput xdotool
+sudo pacman -S --needed --noconfirm base-devel git rust cargo nss nodejs npm feh xorg-xinput xdotool
 
 # ---------------------------------------------------------
 # PART 2: Build Walrs (From Source)
