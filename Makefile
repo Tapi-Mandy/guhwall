@@ -1,42 +1,44 @@
-# Makefile for guhwall
+BINARY_NAME=guhwall
+INSTALL_DIR=/usr/local/bin
+DESKTOP_DIR=/usr/share/applications
+ICON_DIR=/usr/share/icons/hicolor/scalable/apps
 
-# Build directories
-BUILD_DIR = dist/linux-unpacked
-INSTALL_DIR = /opt/guhwall
-BIN_DIR = /usr/bin
-DESKTOP_DIR = /usr/share/applications
-ICON_DIR = /usr/share/icons/hicolor/scalable/apps
+all: build
 
-# This "build" step ensures the binary is fresh before installing
 build:
-	npm run dist
+	@echo "Building guhwall..."
+	go build -ldflags "-s -w" -o $(BINARY_NAME) main.go
 
-install:
-	@echo "Installing guhwall Binary..."
+install: build
+	@echo "Installing Binary..."
+	@sudo mkdir -p $(INSTALL_DIR)
+	@sudo cp $(BINARY_NAME) $(INSTALL_DIR)/
 	
-	# 1. Clean old install
-	rm -rf $(INSTALL_DIR)
-	mkdir -p $(INSTALL_DIR)
+	@echo "Installing Icon..."
+	@sudo mkdir -p $(ICON_DIR)
+	@sudo cp icon.svg $(ICON_DIR)/$(BINARY_NAME).svg
 	
-	# 2. Copy the COMPILED application (not the source code)
-	cp -r $(BUILD_DIR)/* $(INSTALL_DIR)
+	@echo "Generating Desktop Entry..."
+	@echo "[Desktop Entry]" | sudo tee $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Type=Application" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Name=guhwall" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Comment=Guh Wallpaper Manager" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Exec=$(BINARY_NAME)" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Icon=$(BINARY_NAME)" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Categories=Utility;DesktopSettings;" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@echo "Terminal=false" | sudo tee -a $(DESKTOP_DIR)/$(BINARY_NAME).desktop > /dev/null
+	@sudo chmod 644 $(DESKTOP_DIR)/$(BINARY_NAME).desktop
 	
-	# 3. Link the binary
-	# We link directly to the executable electron-builder created
-	ln -sf $(INSTALL_DIR)/guhwall $(BIN_DIR)/guhwall
-	
-	# 4. Install Desktop File and Icon
-	mkdir -p $(ICON_DIR)
-	cp icon.svg $(ICON_DIR)/guhwall.svg
-	cp guhwall.desktop $(DESKTOP_DIR)/guhwall.desktop
-	
-	@echo "Success! guhwall is installed."
+	@echo "Updating system caches..."
+	@sudo gtk-update-icon-cache -f -t /usr/share/icons/hicolor/
+	@sudo update-desktop-database
+	@echo "Done."
 
 uninstall:
-	@echo "Uninstalling..."
-	rm -rf $(INSTALL_DIR)
-	rm -f $(BIN_DIR)/guhwall
-	rm -f $(ICON_DIR)/guhwall.svg
-	rm -f $(DESKTOP_DIR)/guhwall.desktop
-	@echo "Done."
-all: build install
+	@sudo rm -f $(INSTALL_DIR)/$(BINARY_NAME)
+	@sudo rm -f $(DESKTOP_DIR)/$(BINARY_NAME).desktop
+	@sudo rm -f $(ICON_DIR)/$(BINARY_NAME).svg
+	@echo "Uninstalled."
+
+clean:
+	rm -f $(BINARY_NAME)
