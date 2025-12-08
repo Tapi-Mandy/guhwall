@@ -16,7 +16,6 @@ import (
 )
 
 // STYLING: Translucent Background
-// We use rgba(r,g,b,alpha) to allow the wallpaper behind to bleed through.
 const STYLING = `
     window { 
         background-color: rgba(17, 17, 27, 0.85); 
@@ -35,7 +34,7 @@ const STYLING = `
     flowbox { background: transparent; }
     
     button {
-        background-color: rgba(30, 30, 46, 0.8); /* Slightly transparent cards */
+        background-color: rgba(30, 30, 46, 0.8);
         border-radius: 8px;
         border: 1px solid #313244;
         padding: 0;
@@ -60,21 +59,16 @@ func main() {
 	win.SetIconName("guhwall")
 	win.Connect("destroy", func() { gtk.MainQuit() })
 
-	// --- TRANSPARENCY MAGIC STARTS HERE ---
-	// 1. Get the screen associated with the window
-	screen, _ := win.GetScreen()
+	// --- TRANSPARENCY MAGIC ---
+	// FIX 1: GetScreen returns only 1 value
+	screen := win.GetScreen()
 	
-	// 2. Ask for a visual that supports Alpha (transparency)
 	visual, _ := screen.GetRgbaVisual()
-	
-	// 3. Apply it if available (Compositors like Hyprland/Sway support this)
 	if visual != nil {
 		win.SetVisual(visual)
 	}
-	
-	// 4. Allow the app to paint its own background (crucial for CSS rgba to work)
 	win.SetAppPaintable(true)
-	// --- TRANSPARENCY MAGIC ENDS HERE ---
+	// --------------------------
 
 	provider, _ := gtk.CssProviderNew()
 	provider.LoadFromData(STYLING)
@@ -86,7 +80,7 @@ func main() {
 	header, _ := gtk.HeaderBarNew()
 	header.SetShowCloseButton(true)
 	header.SetTitle("guhwall")
-	header.SetSubtitle("Wallpaper Manager")
+	header.SetSubtitle("Guh Wallpaper Manager")
 	win.SetTitlebar(header)
 
 	scroll, _ := gtk.ScrolledWindowNew(nil, nil)
@@ -94,7 +88,8 @@ func main() {
 	vbox.PackStart(scroll, true, true, 0)
 
 	grid, _ := gtk.FlowBoxNew()
-	grid.SetValign(gtk.ALIGN_START)
+	// FIX 2: SetVAlign (Capital A)
+	grid.SetVAlign(gtk.ALIGN_START)
 	grid.SetSelectionMode(gtk.SELECTION_NONE)
 	grid.SetMaxChildrenPerLine(10)
 	grid.SetMinChildrenPerLine(1)
