@@ -1,7 +1,7 @@
 #!/bin/bash
-set -e # Exit immediately if a command exits with a non-zero status
+set -e
 
-# 0. Error Trap (So it doesn't just exit silently on fail)
+# Error Trap
 trap 'echo "Error occurred at line $LINENO. Installation failed."' ERR
 
 # CONFIGURATION
@@ -12,80 +12,46 @@ echo "-----------------------------------------------------"
 echo "        GUHWALL INSTALLER (Native Mode)              "
 echo "-----------------------------------------------------"
 
-# 1. Check & Install Dependencies
-echo "[1/4] Checking System Dependencies..."
+echo "[1/3] Checking Dependencies..."
 
 if command -v pacman &> /dev/null; then
-    # Arch Linux Packages
     sudo pacman -S --needed --noconfirm \
-        base-devel \
-        go \
-        rust \
-        git \
-        gtk3 \
-        pkgconf \
-        libnotify \
-        lz4 \
-        libxkbcommon
+        base-devel go rust git gtk3 pkgconf libnotify lz4 libxkbcommon
     
-    # Add Cargo to PATH immediately for this script execution
     export PATH="$HOME/.cargo/bin:$PATH"
     
-    # Install Matugen via Cargo (More reliable than AUR helpers for this)
     if ! command -v swww &> /dev/null; then
-        echo "   -> Installing swww (via pacman)..."
+        echo "   -> Installing swww..."
         sudo pacman -S --needed --noconfirm swww
     fi
-
     if ! command -v matugen &> /dev/null; then
-        echo "   -> Installing matugen (via cargo)..."
+        echo "   -> Installing matugen..."
         cargo install matugen
     fi
 else
-    echo "Not on Arch Linux? Make sure you have Go, Rust, GTK3, and git installed manually."
+    echo "Not on Arch? Ensure Go, Rust, GTK3, swww, and matugen are installed."
 fi
 
-# 2. Clone the Repository
-echo "[2/4] Setting up Source Code..."
+echo "[2/3] Getting Source Code..."
 
-# Check if we are running INSIDE the repo already (Local install)
+# Local vs Remote check
 if [ -f "main.go" ] && [ -f "Makefile" ]; then
-    echo "   -> We are inside the source directory. Using current files."
+    echo "   -> Using current directory."
 else
-    # We are outside, so we clean clone
-    echo "   -> Cloning guhwall from GitHub to $CLONE_DIR..."
-    
-    # Remove old version if exists to avoid conflicts
+    echo "   -> Cloning from GitHub..."
     rm -rf "$CLONE_DIR"
-    
     git clone "$REPO_URL" "$CLONE_DIR"
-    
-    # Enter the directory
     cd "$CLONE_DIR"
 fi
 
-# 3. Initialize Go Module
+echo "[3/3] Installing..."
 
-# Remove old dependency files to force a clean update
-rm -f go.mod go.sum
+# Hide the warnings during build
+export CGO_CFLAGS="-w"
 
-# Initialize module
-go mod init guhwall
-
-# Force the 'master' branch of the GTK library.
-# The default version crashes on Arch Linux. This fixes it.
-echo "   -> Fetching latest library versions..."
-go get github.com/gotk3/gotk3@master
-go get github.com/disintegration/imaging
-
-# Tidy up
-go mod tidy
-
-# 4. Build and Install
-echo "[4/4] Running Make Install..."
+# Run the makefile (which builds the go app using the repo's go.mod)
 make install
 
 echo "-----------------------------------------------------"
-echo "  SUCCESS! guhwall installed."
-echo "   Run 'guhwall' to start."
+echo "  SUCCESS! Run 'guhwall' to start."
 echo "-----------------------------------------------------"
