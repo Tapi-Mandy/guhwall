@@ -60,19 +60,26 @@ else
     
     git clone "$REPO_URL" "$CLONE_DIR"
     
-    # CRITICAL FIX: Enter the directory
+    # Enter the directory
     cd "$CLONE_DIR"
 fi
 
 # 3. Initialize Go Module
-echo "[3/4] Initializing Go Dependencies..."
-if [ ! -f "go.mod" ]; then
-    go mod init guhwall
-    go mod tidy
-else
-    # Ensure deps are downloaded even if mod file exists
-    go mod tidy
-fi
+
+# Remove old dependency files to force a clean update
+rm -f go.mod go.sum
+
+# Initialize module
+go mod init guhwall
+
+# Force the 'master' branch of the GTK library.
+# The default version crashes on Arch Linux. This fixes it.
+echo "   -> Fetching latest library versions..."
+go get github.com/gotk3/gotk3@master
+go get github.com/disintegration/imaging
+
+# Tidy up
+go mod tidy
 
 # 4. Build and Install
 echo "[4/4] Running Make Install..."
