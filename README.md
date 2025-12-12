@@ -6,7 +6,7 @@
 
 <h3 align="center">Aesthetic wallpaper manager made for guhwm.</h3>
 
-<h4 align="center">Built with Go & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Matugen.</h4>
+<h4 align="center">Built with Rust & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Matugen.</h4>
 
 ---
 
