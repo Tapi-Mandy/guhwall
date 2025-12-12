@@ -19,7 +19,7 @@
 ### Build and install from source
 #### Clone the repository:
 ```
-git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && chmod +x install.sh && ./install.sh
+git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo run
 ```
 ### Alternatives:
 #### Curl the installer
