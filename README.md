@@ -10,13 +10,7 @@
 
 ---
 
-# ✨ Features
-* **⚙️ Matugen Integration:** Uses Matugen to generate color schemes from your wallpapers.
-* **🪟 GTK Configuration:** Uses the color scheme from Matugen and works with GTK3/4.
-* **🎨 Modern UI:** A responsive grid with a translucent, dark-mode aesthetic.
-
-## 📦 Installation
-### Build and install from source
+### 📦 Build and install from source
 #### Clone the repository:
 ```
 git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo run
@@ -26,15 +20,3 @@ git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo run
 ```
 curl -sS https://raw.githubusercontent.com/Tapi-Mandy/guhwall/main/install.sh | bash
 ```
-
-## 🗑️ Uninstalling
-
-To uninstall \`guhwall\`, run:
-
-```bash
-sudo make uninstall
-```
-
----
-
-### 📄 MIT License
