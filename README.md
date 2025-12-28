@@ -6,7 +6,7 @@
 
 <h3 align="center">Aesthetic wallpaper manager made for guhwm.</h3>
 
-<h4 align="center">Built with Rust & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Matugen.</h4>
+<h4 align="center">Built with Rust & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Pywal.</h4>
 
 ---
 
@@ -14,9 +14,4 @@
 #### Clone the repository:
 ```
 git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo run
-```
-### Alternatives:
-#### Curl the installer
-```
-curl -sS https://raw.githubusercontent.com/Tapi-Mandy/guhwall/main/install.sh | bash
 ```
