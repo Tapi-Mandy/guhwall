@@ -13,5 +13,5 @@
 ### 📦 Build and install from source
 #### Clone the repository:
 ```
-git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo install
+git clone https://github.com/Tapi-Mandy/guhwall.git && cd guhwall && cargo install --path .
 ```
