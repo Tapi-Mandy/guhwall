@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+import gi
+import cairo
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf
+
+CSS = b"""
+window {
+    background-color: rgba(36, 34, 31, 0.92);
+    color: #D5C0A7;
+}
+
+headerbar {
+    background: rgba(28, 26, 24, 0.98); 
+    border-bottom: 1px solid rgba(213, 192, 167, 0.1);
+}
+
+headerbar .title {
+    font-size: 14pt;
+    font-weight: 800;
+    color: #EBE1D7;
+}
+
+scrolledwindow {
+    background: transparent;
+}
+
+.wallpaper-card {
+    background-color: transparent;
+    border-radius: 14px;
+    margin: 10px;
+    padding: 0;
+    border: 2px solid transparent; 
+    outline: none;
+    transition: all 200ms ease;
+}
+
+.wallpaper-card:hover {
+    border-color: #D5C0A7; 
+    background-color: rgba(213, 192, 167, 0.05);
+}
+
+.picker-btn {
+    background-color: #D5C0A7;
+    border-radius: 6px;
+    color: #1C1A18;
+    font-weight: bold;
+    padding: 4px 12px;
+}
+"""
+
+class GuhWall(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="guhwall")
+        self.set_default_size(980, 680)
+        
+        # Apply CSS
+        screen = Gdk.Screen.get_default()
+        provider = Gtk.CssProvider()
+        provider.load_from_data(CSS)
+        Gtk.StyleContext.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+        visual = screen.get_rgba_visual()
+        if visual: self.set_visual(visual)
+
+        self.current_dir = os.path.expanduser("~/Wallpapers")
+        if not os.path.exists(self.current_dir):
+            try: os.makedirs(self.current_dir)
+            except: self.current_dir = os.path.expanduser("~")
+
+        # Header Bar
+        hb = Gtk.HeaderBar()
+        hb.set_show_close_button(True)
+        hb.set_title("guhwall")
+        self.set_titlebar(hb)
+
+        picker_btn = Gtk.Button(label="   Wallpapers")
+        picker_btn.get_style_context().add_class("picker-btn")
+        picker_btn.connect("clicked", self.on_folder_clicked)
+        hb.pack_start(picker_btn)
+
+        # Layout
+        self.scroll = Gtk.ScrolledWindow()
+        self.flowbox = Gtk.FlowBox()
+        self.flowbox.set_valign(Gtk.Align.START)
+        
+        # Homogeneous ensures a neat grid, but we will center the items inside
+        self.flowbox.set_homogeneous(True)
+        self.flowbox.set_max_children_per_line(3)
+        self.flowbox.set_min_children_per_line(1)
+        self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        
+        # Adjust spacing for a cleaner look
+        self.flowbox.set_column_spacing(20)
+        self.flowbox.set_row_spacing(20)
+        
+        self.scroll.add(self.flowbox)
+        self.add(self.scroll)
+        
+        self.show_all()
+        self.load_wallpapers()
+
+    def get_rounded_pixbuf(self, pixbuf, radius):
+        width, height = pixbuf.get_width(), pixbuf.get_height()
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        cr = cairo.Context(surface)
+        cr.arc(radius, radius, radius, 3.14159, 4.71238)
+        cr.arc(width - radius, radius, radius, 4.71238, 0)
+        cr.arc(width - radius, height - radius, radius, 0, 1.57079)
+        cr.arc(radius, height - radius, radius, 1.57079, 3.14159)
+        cr.close_path()
+        cr.clip()
+        Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0)
+        cr.paint()
+        return Gdk.pixbuf_get_from_surface(surface, 0, 0, width, height)
+
+    def load_wallpapers(self):
+        for child in self.flowbox.get_children():
+            self.flowbox.remove(child)
+
+        valid_exts = ('.jpg', '.jpeg', '.png', '.webp')
+        try:
+            files = sorted([f for f in os.listdir(self.current_dir) if f.lower().endswith(valid_exts)])
+            for f in files:
+                path = os.path.join(self.current_dir, f)
+                btn = self.create_thumb_button(path)
+                self.flowbox.add(btn)
+        except Exception as e:
+            print(f"Load Error: {e}")
+        self.show_all()
+
+    def create_thumb_button(self, path):
+        
+        btn = Gtk.Button()
+        btn.get_style_context().add_class("wallpaper-card")
+        btn.connect("clicked", self.apply_wallpaper, path)
+        
+        btn.set_halign(Gtk.Align.CENTER)
+        btn.set_valign(Gtk.Align.CENTER)
+        btn.set_hexpand(False)
+        btn.set_vexpand(False)
+        
+        try:
+            tw, th = 280, 158
+            info = GdkPixbuf.Pixbuf.get_file_info(path)
+            if info[0] is None: raise Exception("File error")
+            w, h = info[1], info[2]
+
+            scale = max(tw / w, th / h)
+            load_w, load_h = int(w * scale), int(h * scale)
+
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, load_w, load_h, False)
+            off_x = (load_w - tw) // 2
+            off_y = (load_h - th) // 2
+            cropped = pixbuf.new_subpixbuf(off_x, off_y, tw, th)
+            
+            rounded = self.get_rounded_pixbuf(cropped, 12)
+            img = Gtk.Image.new_from_pixbuf(rounded)
+            btn.add(img)
+            
+        except Exception as e:
+            btn.set_label(os.path.basename(path))
+            
+        return btn
+
+    def on_folder_clicked(self, widget):
+        dialog = Gtk.FileChooserDialog(title="Select Folder", parent=self, action=Gtk.FileChooserAction.SELECT_FOLDER)
+        dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Select", Gtk.ResponseType.OK)
+        if dialog.run() == Gtk.ResponseType.OK:
+            self.current_dir = dialog.get_filename()
+            self.load_wallpapers()
+        dialog.destroy()
+
+    def apply_wallpaper(self, widget, path):
+        local_apply = os.path.join(os.path.dirname(__file__), "guhwall-apply")
+        cmd = local_apply if os.path.exists(local_apply) else "guhwall-apply"
+        subprocess.Popen([cmd, path])
+
+if __name__ == "__main__":
+    win = GuhWall()
+    win.connect("destroy", Gtk.main_quit)
+    Gtk.main()

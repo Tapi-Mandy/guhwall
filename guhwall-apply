@@ -1,0 +1,29 @@
+#!/bin/bash
+
+wal_img="$1"
+[ -z "$wal_img" ] && exit 1
+
+# 1. Run pywal
+wal -i "$wal_img"
+
+# 2. Cache management
+mkdir -p "$HOME/.cache/wal"
+cp "$wal_img" "$HOME/.cache/wal/wallpaper.jpg"
+
+# 3. Apply wallpaper
+if command -v swww >/dev/null 2>&1; then
+    swww img "$HOME/.cache/wal/wallpaper.jpg" --transition-type any
+fi
+
+# 4. SwayNC reload
+swaync-client -rs 2>/dev/null
+
+# 5. Foot conditional logic
+if command -v foot >/dev/null 2>&1; then
+    mkdir -p "$HOME/.config/foot"
+    if [ -f "$HOME/.cache/wal/foot.ini" ]; then
+        sed 's/#//' "$HOME/.cache/wal/foot.ini" > "$HOME/.config/foot/foot.ini"
+        # Refresh foot instances
+        kill -USR1 $(pidof foot) 2>/dev/null
+    fi
+fi
