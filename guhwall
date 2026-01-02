@@ -13,7 +13,7 @@ CONFIG_FILE = os.path.join(CONFIG_DIR, "last_dir.conf")
 
 CSS = b"""
 window { background-color: rgba(36, 34, 31, 0.92); color: #D5C0A7; }
-headerbar { background: rgba(28, 26, 24, 0.98); border-bottom: 1px solid rgba(213, 192, 167, 0.1); }
+headerbar { background: rgba(28, 26, 24, 0.96); border-bottom: 1px solid rgba(213, 192, 167, 0.1); }
 headerbar .title { font-size: 13pt; font-weight: 800; color: #EBE1D7; }
 scrolledwindow { background: transparent; }
 
