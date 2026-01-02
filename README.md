@@ -17,6 +17,18 @@
 git clone https://github.com/Tapi-Mandy/guhwall.git
 ```
 
+> [!IMPORTANT]
+> You need to give permissions to `guhwall`, `guhwall-apply`, & `install.sh`.
+> 
+> *(If you want to use/modify the installer)* *obviously*
+>
+> `chmod +x install.sh guhwall guhwall-apply`
+
+**Dependencies:** (Arch)
+```
+sudo pacman -S --needed --noconfirm python-gobject gtk3 python-pywal swww swaync python-pillow python-cairo cantarell-fonts
+```
+
 ### Alternatively
 
 #### Curl the installer:
