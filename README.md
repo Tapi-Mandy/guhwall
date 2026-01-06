@@ -4,7 +4,7 @@
 
 ---
 
-<h3 align="center">Aesthetic wallpaper manager made for guhwm.</h3>
+<h3 align="center">Aesthetic wallpaper manager made for <a href="https://github.com/Tapi-Mandy/guhwm/">guhwm</a>.</h3>
 
 <h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Pywal.</h4>
 
