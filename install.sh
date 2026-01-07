@@ -12,17 +12,15 @@ echo "( o.o )"
 echo " > ^ <"
 echo -e "${NC}"
 
-echo -e "${CREAM}${BOLD}--- Installing guhwall ---${NC}"
-
 # 1. Dependencies
-echo -e "${CREAM}Installing dependencies...${NC}"
+echo -e "${CREAM}--> Installing dependencies...${NC}"
 sudo pacman -S --needed --noconfirm python-gobject gtk3 python-pywal swww swaync python-pillow python-cairo cantarell-fonts
 
 # 2. Binary Installation
 BIN_DIR="$HOME/.local/bin"
 mkdir -p "$BIN_DIR"
 
-echo -e "${CREAM}Copying binaries...${NC}"
+echo -e "${CREAM}--> Copying binaries...${NC}"
 
 # Install main app
 if [ -f "guhwall" ]; then
@@ -47,7 +45,7 @@ chmod +x "$BIN_DIR/guhwall" "$BIN_DIR/guhwall-apply"
 ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
 mkdir -p "$ICON_DIR"
 if [ -f "assets/guhwall.svg" ]; then
-    echo -e "${CREAM}Installing icon...${NC}"
+    echo -e "${CREAM}--> Installing icon...${NC}"
     cp assets/guhwall.svg "$ICON_DIR/guhwall.svg"
 fi
 
