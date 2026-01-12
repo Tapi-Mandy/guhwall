@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Colors
-CREAM='\033[0;33m'
-BOLD='\033[1m'
-NC='\033[0m'
+YLW=$'\033[1;33m' # Yellow: Primary
+WHT=$'\033[0;37m' # Light Gray
+GRA=$'\033[1;30m' # Dark Gray
+NC=$'\033[0m'     # No Color
 
 # ASCII Art
 echo -e "${CREAM}"
