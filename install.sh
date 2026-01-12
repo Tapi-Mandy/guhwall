@@ -2,7 +2,6 @@
 
 # --- Colors ---
 YLW=$'\033[1;33m' # Yellow: Primary
-WHT=$'\033[0;37m' # Light Gray
 GRA=$'\033[1;30m' # Dark Gray
 RED=$'\033[0;31m' # Red
 BOLD=$'\033[1m'   # Bold
@@ -23,7 +22,7 @@ sudo pacman -S --needed --noconfirm python-gobject gtk3 python-pywal swww python
 BIN_DIR="$HOME/.local/bin"
 mkdir -p "$BIN_DIR"
 
-echo -e "${YLW}--> Copying binaries...${NC}"
+echo -e "${GRA}--> Copying binaries...${NC}"
 
 # Install main app
 if [ -f "guhwall" ]; then
@@ -48,7 +47,7 @@ chmod +x "$BIN_DIR/guhwall" "$BIN_DIR/guhwall-apply"
 ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
 mkdir -p "$ICON_DIR"
 if [ -f "assets/guhwall.svg" ]; then
-    echo -e "${YLW}--> Installing icon...${NC}"
+    echo -e "${GRA}--> Installing icon...${NC}"
     cp assets/guhwall.svg "$ICON_DIR/guhwall.svg"
 fi
 
