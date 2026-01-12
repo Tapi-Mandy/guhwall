@@ -66,4 +66,4 @@ EOF
 # 5. Cache Refresh
 gtk-update-icon-cache -f -t ~/.local/share/icons/hicolor 2>/dev/null || true
 
-echo -e "${YLW}${BOLD}==> Done! Launch 'guhwall' via Rofi after the installation is complete.${NC}"
+echo -e "${YLW}==> Done! Launch 'guhwall' via Rofi after the installation is complete.${NC}"
