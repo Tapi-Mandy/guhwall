@@ -4,6 +4,7 @@
 YLW=$'\033[1;33m' # Yellow: Primary
 WHT=$'\033[0;37m' # Light Gray
 GRA=$'\033[1;30m' # Dark Gray
+RED=$'\033[0;31m' # Red
 NC=$'\033[0m'     # No Color
 
 # ASCII Art
