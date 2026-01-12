@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# --- Colors ---
 YLW=$'\033[1;33m' # Yellow: Primary
 GRA=$'\033[1;30m' # Dark Gray
 RED=$'\033[0;31m' # Red
-BOLD=$'\033[1m'   # Bold
 NC=$'\033[0m'     # No Color
 
 # --- ASCII Art ---
