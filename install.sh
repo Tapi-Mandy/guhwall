@@ -14,7 +14,7 @@ echo -e "${NC}"
 
 # 1. Dependencies
 echo -e "${YLW}--> Installing dependencies...${NC}"
-sudo pacman -S --needed --noconfirm python-gobject gtk3 python-pywal swww python-pillow python-cairo cantarell-fonts
+sudo pacman -S --needed --noconfirm python-gobject gtk3 imagemagick python-pywal swww python-pillow python-cairo cantarell-fonts
 
 # 2. Binary Installation
 BIN_DIR="$HOME/.local/bin"
