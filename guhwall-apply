@@ -4,9 +4,10 @@ wal_img="$1"
 [ -z "$wal_img" ] && exit 1
 
 # 1. Run pywal
+# This uses your templates to generate files in ~/.cache/wal/
 wal -i "$wal_img"
 
-# 2. Cache management
+# 2. Cache management for system use
 mkdir -p "$HOME/.cache/wal"
 cp "$wal_img" "$HOME/.cache/wal/wallpaper.jpg"
 
@@ -15,15 +16,23 @@ if command -v swww >/dev/null 2>&1; then
     swww img "$HOME/.cache/wal/wallpaper.jpg" --transition-type any
 fi
 
-# 4. SwayNC reload
-swaync-client -rs 2>/dev/null
+# 4. Waybar Refresh logic
+# Pywal renders the 'waybar' template into ~/.cache/wal/waybar. 
+# We rename it so your style.css @import finds it.
+if [ -f "$HOME/.cache/wal/waybar" ]; then
+    cp "$HOME/.cache/wal/waybar" "$HOME/.cache/wal/colors-waybar.css"
+fi
 
-# 5. Foot conditional logic
+# 5. Foot terminal logic
 if command -v foot >/dev/null 2>&1; then
     mkdir -p "$HOME/.config/foot"
+    # We copy the FULL rendered template (with fonts/keys) instead of using sed
     if [ -f "$HOME/.cache/wal/foot.ini" ]; then
-        sed 's/#//' "$HOME/.cache/wal/foot.ini" > "$HOME/.config/foot/foot.ini"
-        # Refresh foot instances
+        cp "$HOME/.cache/wal/foot.ini" "$HOME/.config/foot/foot.ini"
+        # Send signal to open foot instances to reload colors immediately
         kill -USR1 $(pidof foot) 2>/dev/null
     fi
 fi
+
+# 6. SwayNC reload
+swaync-client -rs 2>/dev/null
