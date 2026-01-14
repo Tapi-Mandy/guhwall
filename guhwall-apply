@@ -1,38 +1,161 @@
 #!/bin/bash
 
-wal_img="$1"
-[ -z "$wal_img" ] && exit 1
+#=============================================================================
+# guhwall-apply - Wallpaper applier using matugen for Material You theming
+#=============================================================================
+# This script applies a wallpaper and generates a Material You color scheme
+# using matugen (Material Design 3 color generator) instead of pywal.
+#
+# Usage: guhwall-apply <path-to-wallpaper>
+#
+# Features:
+#   - Generates Material You color palette from wallpaper
+#   - Applies wallpaper using swww (if available)
+#   - Updates Waybar with generated colors
+#   - Configures Foot terminal with themed colors
+#   - Reloads SwayNC notification center
+#=============================================================================
 
-# 1. Run pywal
-# This uses your templates to generate files in ~/.cache/wal/
-wal -i "$wal_img"
+wallpaper_img="$1"
 
-# 2. Cache management for system use
-mkdir -p "$HOME/.cache/wal"
-cp "$wal_img" "$HOME/.cache/wal/wallpaper.jpg"
+# Validate input: Ensure a wallpaper path is provided
+if [ -z "$wallpaper_img" ]; then
+    echo "Error: No wallpaper image provided"
+    echo "Usage: $0 <path-to-wallpaper>"
+    exit 1
+fi
 
-# 3. Apply wallpaper
+# Validate that the file exists
+if [ ! -f "$wallpaper_img" ]; then
+    echo "Error: File '$wallpaper_img' does not exist"
+    exit 1
+fi
+
+#-----------------------------------------------------------------------------
+# 1. Generate Material You colors using matugen
+#-----------------------------------------------------------------------------
+# matugen reads the wallpaper and generates a color palette based on
+# Material Design 3 principles. Templates configured in ~/.config/matugen/config.toml
+# will be automatically rendered with the generated colors.
+#
+# This replaces the 'wal -i' command from pywal
+#-----------------------------------------------------------------------------
+if command -v matugen >/dev/null 2>&1; then
+    echo "Generating Material You color scheme from wallpaper..."
+    
+    # Run matugen with the image
+    # The 'image' subcommand extracts dominant colors and generates palettes
+    matugen image "$wallpaper_img" >/dev/null 2>&1
+    
+    if [ $? -ne 0 ]; then
+        echo "Warning: matugen failed to generate colors"
+    fi
+else
+    echo "Warning: matugen not found. Colors will not be generated."
+    echo "Install matugen: 'yay -S matugen' or 'paru -S matugen'"
+fi
+
+#-----------------------------------------------------------------------------
+# 2. Cache management for system-wide wallpaper access
+#-----------------------------------------------------------------------------
+# Store the wallpaper in a standard cache location so other applications
+# (like lock screens, greeters, etc.) can access the current wallpaper
+#-----------------------------------------------------------------------------
+mkdir -p "$HOME/.cache/matugen"
+cp "$wallpaper_img" "$HOME/.cache/matugen/wallpaper.jpg"
+
+#-----------------------------------------------------------------------------
+# 3. Apply wallpaper using swww (Wayland Wallpaper Daemon)
+#-----------------------------------------------------------------------------
+# swww is a efficient wallpaper daemon for Wayland compositors with
+# support for smooth transitions and multiple monitors
+#-----------------------------------------------------------------------------
 if command -v swww >/dev/null 2>&1; then
-    swww img "$HOME/.cache/wal/wallpaper.jpg" --transition-type any
+    echo "Applying wallpaper with swww..."
+    
+    # Use cached wallpaper with transition effect
+    # --transition-type options: none, simple, fade, wipe, grow, outer, any (random)
+    swww img "$HOME/.cache/matugen/wallpaper.jpg" --transition-type any
+    
+    if [ $? -eq 0 ]; then
+        echo "Wallpaper applied successfully"
+    else
+        echo "Warning: swww failed to apply wallpaper"
+    fi
+else
+    echo "Warning: swww not found. Wallpaper will not be displayed."
 fi
 
-# 4. Waybar Refresh logic
-# Pywal renders the 'waybar' template into ~/.cache/wal/waybar. 
-# We rename it so your style.css @import finds it.
-if [ -f "$HOME/.cache/wal/waybar" ]; then
-    cp "$HOME/.cache/wal/waybar" "$HOME/.cache/wal/colors-waybar.css"
+#-----------------------------------------------------------------------------
+# 4. Waybar color scheme refresh
+#-----------------------------------------------------------------------------
+# matugen generates colors based on templates in ~/.config/matugen/templates/
+# The output is written to ~/.cache/matugen/ as configured in config.toml
+#
+# Waybar's style.css should @import this generated file:
+#   @import url("~/.cache/matugen/colors-waybar.css");
+#-----------------------------------------------------------------------------
+if [ -f "$HOME/.cache/matugen/colors-waybar.css" ]; then
+    echo "Waybar colors updated"
+    
+    # Reload waybar to apply new colors (if running)
+    if pgrep -x waybar >/dev/null; then
+        pkill -SIGUSR2 waybar 2>/dev/null || {
+            # If signal reload fails, do a full restart
+            killall waybar 2>/dev/null
+            waybar >/dev/null 2>&1 &
+        }
+    fi
+else
+    echo "Warning: Waybar color file not found at ~/.cache/matugen/colors-waybar.css"
 fi
 
-# 5. Foot terminal logic
+#-----------------------------------------------------------------------------
+# 5. Foot terminal color scheme application
+#-----------------------------------------------------------------------------
+# Apply the generated color scheme to Foot terminal emulator
+# Foot supports real-time reloading via SIGUSR1 signal
+#-----------------------------------------------------------------------------
 if command -v foot >/dev/null 2>&1; then
     mkdir -p "$HOME/.config/foot"
-    # We copy the FULL rendered template (with fonts/keys) instead of using sed
-    if [ -f "$HOME/.cache/wal/foot.ini" ]; then
-        cp "$HOME/.cache/wal/foot.ini" "$HOME/.config/foot/foot.ini"
-        # Send signal to open foot instances to reload colors immediately
-        kill -USR1 $(pidof foot) 2>/dev/null
+    
+    # Check if matugen generated the foot configuration
+    if [ -f "$HOME/.cache/matugen/foot.ini" ]; then
+        echo "Applying Foot terminal theme..."
+        
+        # Copy the FULL rendered template (includes all original config + colors)
+        cp "$HOME/.cache/matugen/foot.ini" "$HOME/.config/foot/foot.ini"
+        
+        # Send SIGUSR1 to all running foot instances for live reload
+        # This is more efficient than restarting terminals
+        pkill -SIGUSR1 foot 2>/dev/null && echo "Foot terminal reloaded"
+    else
+        echo "Warning: Foot color scheme not found at ~/.cache/matugen/foot.ini"
     fi
 fi
 
-# 6. SwayNC reload
-swaync-client -rs 2>/dev/null
+#-----------------------------------------------------------------------------
+# 6. SwayNC notification center reload
+#-----------------------------------------------------------------------------
+# Reload SwayNC to apply any CSS changes that depend on the color scheme
+# The -rs flag reloads both the style and config
+#-----------------------------------------------------------------------------
+if command -v swaync-client >/dev/null 2>&1; then
+    echo "Reloading SwayNC notification center..."
+    swaync-client -rs 2>/dev/null
+fi
+
+#-----------------------------------------------------------------------------
+# 7. Additional integrations (optional - uncomment to enable)
+#-----------------------------------------------------------------------------
+
+# Reload rofi (application launcher) if it uses the generated colors
+# rofi reads CSS from ~/.config/rofi/style.css
+# if command -v rofi >/dev/null 2>&1; then
+#     pkill -SIGUSR1 rofi 2>/dev/null
+# fi
+
+# If using gtk theme that reads from matugen colors
+# gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+
+echo "Theme application complete!"

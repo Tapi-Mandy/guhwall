@@ -6,7 +6,7 @@
 
 <h3 align="center">Aesthetic wallpaper manager made for <a href="https://github.com/Tapi-Mandy/guhwm/">guhwm</a>.</h3>
 
-<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Pywal.</h4>
+<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using matugen (Material You color generation).</h4>
 
 ---
 
@@ -26,8 +26,11 @@ git clone https://github.com/Tapi-Mandy/guhwall.git
 
 **Dependencies:** (Arch)
 ```
-sudo pacman -S --needed --noconfirm python-gobject gtk3 python-pywal swww swaync python-pillow python-cairo cantarell-fonts
+sudo pacman -S --needed --noconfirm python-gobject gtk3 matugen swww swaync python-pillow python-cairo cantarell-fonts
 ```
+
+> **Note:** `matugen` generates Material Design 3 compliant color palettes from wallpapers.
+> If not in official repos, install from AUR: `yay -S matugen` or `paru -S matugen`
 
 ### Alternatively
 
