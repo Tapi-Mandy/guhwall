@@ -43,16 +43,23 @@ fi
 if command -v matugen >/dev/null 2>&1; then
     echo "Generating Material You color scheme from wallpaper..."
     
-    # Run matugen with the image
+    # Run matugen with the image - SHOW ERRORS for debugging
     # The 'image' subcommand extracts dominant colors and generates palettes
-    matugen image "$wallpaper_img" >/dev/null 2>&1
-    
-    if [ $? -ne 0 ]; then
-        echo "Warning: matugen failed to generate colors"
+    if ! matugen image "$wallpaper_img" 2>&1; then
+        echo "ERROR: matugen failed!"
+        echo "This could mean:"
+        echo "  - Invalid image format"
+        echo "  - Corrupted image file"
+        echo "  - Missing dependencies"
+        echo "  - Invalid config.toml syntax"
+        echo ""
+        echo "Try running manually: matugen image '$wallpaper_img'"
+        exit 1
     fi
 else
-    echo "Warning: matugen not found. Colors will not be generated."
+    echo "ERROR: matugen not found!"
     echo "Install matugen: 'yay -S matugen' or 'paru -S matugen'"
+    exit 1
 fi
 
 #-----------------------------------------------------------------------------
