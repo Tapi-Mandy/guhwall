@@ -14,7 +14,11 @@ echo -e "${NC}"
 
 # 1. Dependencies
 echo -e "${YLW}--> Installing dependencies...${NC}"
-sudo pacman -S --needed --noconfirm python-gobject gtk3 swww python-pillow python-cairo cantarell-fonts
+sudo pacman -S --needed --noconfirm python-gobject gtk3 imagemagick swww python-pillow python-cairo cantarell-fonts
+
+# Note: matugen must be installed from AUR
+echo -e "${GRA}--> matugen (AUR) is required for Material You theming${NC}"
+echo -e "${GRA}--> Install it with: yay -S matugen or paru -S matugen${NC}"
 
 # 2. Binary Installation
 BIN_DIR="$HOME/.local/bin"
