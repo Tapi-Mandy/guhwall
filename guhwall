@@ -1,72 +1,159 @@
 #!/usr/bin/env python3
+import sys
 import os
 import subprocess
-import gi
-import cairo
 import threading
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+import gi
+
+# Debug logging to catch startup issues
+def log(msg):
+    sys.stderr.write(f"[guhwall] {msg}\n")
+    sys.stderr.flush()
+
+try:
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+    import cairo
+except Exception as e:
+    log(f"CRITICAL: Failed to import GTK: {e}")
+    sys.exit(1)
 
 # Persistence Paths
 CONFIG_DIR = os.path.expanduser("~/.config/guhwall")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "last_dir.conf")
 
 CSS = b"""
-window { background-color: rgba(36, 34, 31, 0.92); color: #D5C0A7; }
-headerbar { background: rgba(28, 26, 24, 0.96); border-bottom: 1px solid rgba(213, 192, 167, 0.1); }
-headerbar .title { font-size: 13pt; font-weight: 800; color: #EBE1D7; }
-scrolledwindow { background: transparent; }
+/* --- ARCHITECTURE --- */
+window { 
+    background-color: rgba(30, 30, 30, 0.01); 
+}
 
-.wallpaper-card {
-    background-color: transparent;
-    border-radius: 14px;
-    margin: 15px;
+headerbar { 
+    background-image: none;
+    background-color: rgba(28, 26, 24, 0.80); 
+    border: none; 
+    box-shadow: none;
+    min-height: 48px;
+    border-radius: 12px 12px 0 0;
+}
+
+headerbar .title { 
+    font-size: 13pt; 
+    font-weight: 800; 
+    color: #EBE1D7; 
+}
+
+scrolledwindow { 
+    background-image: none;
+    background-color: rgba(36, 34, 31, 0.70);
+    border-radius: 0 0 12px 12px;
+}
+
+viewport { background: transparent; }
+decoration { box-shadow: none; margin: 1px; background: transparent; }
+
+/* --- CLOSE BUTTON --- */
+window headerbar button.titlebutton.close {
+    background-image: none;
+    background-color: #D5C0A7;
+    color: #1C1A18;
+    border-radius: 99px;
+    margin-right: 8px;
+    min-width: 24px;
+    min-height: 24px;
     padding: 0;
-    border: 2px solid #4a4a4a;
+    border: none;
+    opacity: 1;
+    transition: background-color 200ms ease;
+}
+
+/* --- CLOSE BUTTON HOVER --- */
+window headerbar button.titlebutton.close:hover {
+    background-image: none;
+    background-color: #AA8B79;
+    color: #1C1A18;
+}
+
+/* --- WALLPAPERS BUTTON --- */
+headerbar button.picker-btn {
+    background-image: none;
+    background-color: #D5C0A7;
+    color: #1C1A18;
+    border: none;
+    border-radius: 6px; 
+    font-weight: bold; 
+    padding: 4px 12px;
+    transition: background-color 200ms ease;
+}
+
+/* --- WALLPAPERS BUTTON HOVER --- */
+headerbar button.picker-btn:hover {
+    background-image: none;
+    background-color: #AA8B79;
+    color: #1C1A18;
+}
+
+/* --- CARDS --- */
+.wallpaper-card {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 14px;
+    margin: 10px;
+    padding: 0;
+    border: 3px solid #4A4A4A;
     outline: none;
     opacity: 0;
     min-width: 280px;
     min-height: 158px;
-    transition: border 250ms ease, margin 250ms ease, background-color 250ms ease, opacity 800ms ease-out;
+    transition: border-color 200ms ease, background-color 200ms ease, opacity 500ms ease-out;
 }
+
 .revealed { opacity: 1; }
+
 .wallpaper-card:hover {
     border-color: #D5C0A7; 
-    border-width: 4px;
-    margin: 13px;
-    background-color: rgba(213, 192, 167, 0.1);
+    background-color: rgba(213, 192, 167, 0.05);
 }
+
+/* --- TEXT LABEL BAR --- */
 .name-bar {
-    background-color: rgba(28, 26, 24, 0.85);
+    background-color: rgba(28, 26, 24, 0.95);
     color: #EBE1D7;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 9pt;
-    padding: 6px;
+    padding: 8px;
+    margin: 0;
     border-bottom-left-radius: 11px;
     border-bottom-right-radius: 11px;
     opacity: 0;
-    transition: opacity 300ms ease;
+    transition: opacity 250ms ease;
 }
+
 .wallpaper-card:hover .name-bar { opacity: 1; }
-.picker-btn {
-    background-color: #D5C0A7;
-    border-radius: 6px; color: #1C1A18;
-    font-weight: bold; padding: 4px 12px;
-}
 """
 
 class GuhWall(Gtk.Window):
     def __init__(self):
+        log("Creating window...")
         super().__init__(title="guhwall")
         self.set_default_size(980, 680)
         self.set_position(Gtk.WindowPosition.CENTER)
         
-        screen = Gdk.Screen.get_default()
-        provider = Gtk.CssProvider()
-        provider.load_from_data(CSS)
-        Gtk.StyleContext.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-        visual = screen.get_rgba_visual()
-        if visual: self.set_visual(visual)
+        try:
+            screen = Gdk.Screen.get_default()
+            visual = screen.get_rgba_visual()
+            if visual and screen.is_composited():
+                self.set_visual(visual)
+        except Exception as e:
+            log(f"Visual error: {e}")
+
+        self.set_app_paintable(True)
+
+        try:
+            provider = Gtk.CssProvider()
+            provider.load_from_data(CSS)
+            Gtk.StyleContext.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        except Exception as e:
+            log(f"CSS Error: {e}")
 
         self.current_dir = self.load_last_path()
 
@@ -75,20 +162,23 @@ class GuhWall(Gtk.Window):
         hb.set_title("guhwall")
         self.set_titlebar(hb)
 
-        picker_btn = Gtk.Button(label="   Wallpapers")
+        picker_btn = Gtk.Button(label="    Wallpapers")
         picker_btn.get_style_context().add_class("picker-btn")
         picker_btn.connect("clicked", self.on_folder_clicked)
         hb.pack_start(picker_btn)
 
         self.scroll = Gtk.ScrolledWindow()
         self.scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scroll.set_hexpand(True)
+        self.scroll.set_vexpand(True)
         
         self.flowbox = Gtk.FlowBox()
         self.flowbox.set_homogeneous(True) 
         self.flowbox.set_max_children_per_line(3)
         self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
-        self.flowbox.set_column_spacing(5)
-        self.flowbox.set_row_spacing(5)
+        self.flowbox.set_column_spacing(10)
+        self.flowbox.set_row_spacing(10)
+        self.flowbox.set_valign(Gtk.Align.START)
         
         self.scroll.add(self.flowbox)
         self.add(self.scroll)
@@ -133,6 +223,7 @@ class GuhWall(Gtk.Window):
         valid_exts = ('.jpg', '.jpeg', '.png', '.webp')
         try:
             if not os.path.exists(self.current_dir): return
+            
             files = sorted([f for f in os.listdir(self.current_dir) if f.lower().endswith(valid_exts)])
             
             targets = []
@@ -143,20 +234,18 @@ class GuhWall(Gtk.Window):
                 targets.append((btn, img_widget, path))
             
             self.show_all()
-
             thread = threading.Thread(target=self.bg_worker, args=(targets,), daemon=True)
             thread.start()
         except Exception as e:
-            print(f"Error: {e}")
+            log(f"Error: {e}")
 
     def create_full_structure(self, path):
-        """ Creates the Button -> Overlay -> Image -> Label skeleton """
         btn = Gtk.Button()
         btn.get_style_context().add_class("wallpaper-card")
         btn.connect("clicked", self.apply_wallpaper, path)
         btn.set_size_request(280, 158)
         btn.set_halign(Gtk.Align.CENTER)
-        btn.set_valign(Gtk.Align.CENTER)
+        btn.set_relief(Gtk.ReliefStyle.NONE)
 
         overlay = Gtk.Overlay()
         img_widget = Gtk.Image()
@@ -168,7 +257,11 @@ class GuhWall(Gtk.Window):
         label.set_valign(Gtk.Align.END)
         label.set_ellipsize(3)
         overlay.add_overlay(label)
-        
+        try:
+            overlay.set_overlay_pass_through(label, True)
+        except Exception as e:
+            log(f"Warning: set_overlay_pass_through failed: {e}")
+
         btn.add(overlay)
         return btn, img_widget
 
@@ -192,7 +285,6 @@ class GuhWall(Gtk.Window):
         except: return None
 
     def update_ui_widget(self, btn, img_widget, pix):
-        """ Swaps the pixels in the already-rendered widget """
         if pix:
             img_widget.set_from_pixbuf(pix)
             btn.get_style_context().add_class("revealed")
@@ -213,6 +305,11 @@ class GuhWall(Gtk.Window):
         subprocess.Popen([cmd, path])
 
 if __name__ == "__main__":
-    win = GuhWall()
-    win.connect("destroy", Gtk.main_quit)
-    Gtk.main()
+    try:
+        win = GuhWall()
+        win.connect("destroy", Gtk.main_quit)
+        Gtk.main()
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except Exception as e:
+        log(f"Fatal Error: {e}")
