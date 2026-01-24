@@ -6,12 +6,12 @@
 
 <h3 align="center">Aesthetic wallpaper manager made for <a href="https://github.com/Tapi-Mandy/guhwm/">guhwm</a>.</h3>
 
-<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using matugen (Material You color generation).</h4>
+<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using matugen.</h4>
 
 ---
 
 ### Git clone from source
-> Useful for modifying/forking
+> Useful for modifying / forking
 #### Clone the repository:
 ```
 git clone https://github.com/Tapi-Mandy/guhwall.git
