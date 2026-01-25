@@ -5,6 +5,11 @@ import subprocess
 import threading
 import gi
 
+# Identity
+from gi.repository import GLib
+GLib.set_prgname('guhwall')
+GLib.set_application_name('guhwall')
+
 # Debug logging to catch startup issues
 def log(msg):
     sys.stderr.write(f"[guhwall] {msg}\n")
