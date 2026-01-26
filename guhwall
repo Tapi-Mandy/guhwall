@@ -28,7 +28,7 @@ CONFIG_DIR = os.path.expanduser("~/.config/guhwall")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "last_dir.conf")
 
 CSS = b"""
-/* --- ARCHITECTURE --- */
+/* --- WINDOW --- */
 window { 
     background-color: rgba(30, 30, 30, 0.01); 
 }
