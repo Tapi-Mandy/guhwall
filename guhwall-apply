@@ -4,7 +4,7 @@ wal_img="$1"
 [ -z "$wal_img" ] && exit 1
 
 # 1. Run matugen to generate Material You colors
-# This generates colors and renders templates (waybar, foot, etc.)
+# This generates colors and renders templates (Waybar, foot, etc.)
 matugen image "$wal_img"
 
 # 2. Apply wallpaper
@@ -12,7 +12,7 @@ if command -v swww >/dev/null 2>&1; then
     swww img "$wal_img" --transition-type any
 fi
 
-# 3. Restart waybar to apply new colors
+# 3. Restart Waybar to apply new colors
 pkill waybar 2>/dev/null
 waybar &>/dev/null &
 disown
