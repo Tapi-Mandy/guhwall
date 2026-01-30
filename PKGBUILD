@@ -9,7 +9,7 @@ license=('MIT')
 depends=('gtk3' 'python-gobject' 'python-pillow' 'python-cairo' 'matugen' 'swww' 'cantarell-fonts' 'ttf-jetbrains-mono-nerd')
 source=("guhwall"
         "guhwall-apply"
-        "assets/guhwall.png")
+        "guhwall.png::assets/guhwall.png")
 sha256sums=('SKIP'
             'SKIP'
             'SKIP')
@@ -20,7 +20,7 @@ package() {
     install -Dm755 "${srcdir}/guhwall-apply" "${pkgdir}/usr/bin/guhwall-apply"
 
     # 2. Install Icon
-    install -Dm644 "${srcdir}/guhwall.png" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/guhwall.png"
+    install -Dm644 "${srcdir}/guhwall.png" "${pkgdir}/usr/share/pixmaps/guhwall.png"
 
     # 3. Create and Install Desktop Entry
     mkdir -p "${pkgdir}/usr/share/applications"
