@@ -3,7 +3,7 @@
 wal_img="$1"
 [ -z "$wal_img" ] && exit 1
 
-# 1. Run matugen to generate Material You colors
+# 1. Run Matugen to generate Material You colors
 # This generates colors and renders templates (Waybar, foot, etc.)
 matugen image "$wal_img"
 
