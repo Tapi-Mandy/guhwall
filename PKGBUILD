@@ -10,11 +10,11 @@ depends=('gtk3' 'python-gobject' 'python-pillow' 'python-cairo' 'matugen' 'swww'
 
 source=("guhwall"
         "guhwall-apply"
-        "guhwall.png::assets/guhwall.png")
+        "guhwall.png")
 
-sha256sums=('SKIP'
-            'SKIP'
-            'SKIP')
+sha256sums=('000c6b234117932d442ed0515ce9bb9b9e8db1bd4c48b046820c03518c01a898'
+            'c4600ad857290c8e8eea6ad50879cacb07b298eba015d40379894ed5c2d32e49'
+            'f8139e21d5ff2cf4de2a477084ccedadc3882c9f53695531dde623341c2bc63d')
 
 package() {
     # 1. Install Binaries
