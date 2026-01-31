@@ -6,7 +6,7 @@ pkgdesc="Guh?? Wallpapers!"
 arch=('any')
 url="https://github.com/Tapi-Mandy/guhwall"
 license=('MIT')
-depends=('gtk3' 'python-gobject' 'python-pillow' 'python-cairo' 'matugen' 'swww' 'cantarell-fonts' 'ttf-jetbrains-mono-nerd')
+depends=('gtk3' 'python-gobject' 'python-pillow' 'python-cairo' 'swww' 'cantarell-fonts' 'ttf-jetbrains-mono-nerd')
 
 source=("guhwall"
         "guhwall-apply"
