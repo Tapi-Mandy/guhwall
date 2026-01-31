@@ -4,9 +4,9 @@
 
 ---
 
-<h3 align="center">Aesthetic wallpaper manager made for <a href="https://github.com/Tapi-Mandy/guhwm/">guhwm</a>.</h3>
+<h3 align="center">Aesthetic Wallpaper Manager Made For <a href="https://github.com/Tapi-Mandy/guhwm/">guhwm</a>.</h3>
 
-<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection and instantly apply themes using Matugen.</h4>
+<h4 align="center">Built with Python & GTK, it provides a beautiful, lightweight, and compact UI to browse your collection.</h4>
 
 ---
 ## Installation
