@@ -13,7 +13,7 @@
 ### <sub><img src="https://cdn.simpleicons.org/archlinux/1793D1" height="25" width="25"></sub> Arch Linux
 
 ```bash
-git clone https://github.com/Tapi-Mandy/guhwall.git
+git clone --depth 1 https://github.com/Tapi-Mandy/guhwall.git
 cd guhwall
 makepkg -si
 ```
