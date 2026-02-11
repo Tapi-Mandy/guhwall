@@ -44,10 +44,46 @@ for cmd in jq bc; do
     fi
 done
 
+# ── Auto-generate fallback colors.json if missing ──────────────────────────
+# Instead of erroring, we bootstrap a sensible default palette so the script
+# works out-of-the-box on any system — even before 'wal -i' has been run.
+_generate_fallback_colors() {
+    local target_dir
+    target_dir="$(dirname "$1")"
+    mkdir -p "$target_dir"
+    cat > "$1" <<'FALLBACK_EOF'
+{
+    "special": {
+        "background": "#1a1a2e",
+        "foreground": "#e0def4",
+        "cursor": "#e0def4"
+    },
+    "colors": {
+        "color0":  "#1a1a2e",
+        "color1":  "#e06c75",
+        "color2":  "#98c379",
+        "color3":  "#e5c07b",
+        "color4":  "#61afef",
+        "color5":  "#c678dd",
+        "color6":  "#56b6c2",
+        "color7":  "#e0def4",
+        "color8":  "#2e2e42",
+        "color9":  "#e06c75",
+        "color10": "#98c379",
+        "color11": "#e5c07b",
+        "color12": "#61afef",
+        "color13": "#c678dd",
+        "color14": "#56b6c2",
+        "color15": "#e0def4"
+    }
+}
+FALLBACK_EOF
+    echo "  ⚠  colors.json not found — generated fallback palette at $1"
+    echo "     Run 'wal -i <wallpaper>' for real wallpaper-based colors."
+}
+
 if [[ ! -f "$COLORS_JSON" ]]; then
-    echo "error: colors.json not found at '$COLORS_JSON'" >&2
-    echo "       Run 'wal -i <wallpaper>' first, or pass a custom path." >&2
-    exit 1
+    _generate_fallback_colors "$COLORS_JSON"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -459,6 +495,20 @@ else
     # Ensure directories exist
     mkdir -p "$GTK3_DIR" "$GTK4_DIR"
 
+    # Auto-create gtk.css with @import if missing or lacking the import
+    for d in "$GTK3_DIR" "$GTK4_DIR"; do
+        if [[ ! -f "$d/gtk.css" ]]; then
+            echo '@import "colors.css";' > "$d/gtk.css"
+            echo "  ✓ Created $d/gtk.css (with colors.css import)"
+        elif ! grep -q 'colors.css' "$d/gtk.css" 2>/dev/null; then
+            # Prepend the import to the existing file
+            tmp=$(mktemp)
+            { echo '@import "colors.css";'; cat "$d/gtk.css"; } > "$tmp"
+            mv "$tmp" "$d/gtk.css"
+            echo "  ✓ Added colors.css import to $d/gtk.css"
+        fi
+    done
+
     # Backup existing files
     for d in "$GTK3_DIR" "$GTK4_DIR"; do
         if [[ -f "$d/colors.css" ]]; then
@@ -475,17 +525,7 @@ else
     generate_css "gtk4" > "$GTK4_DIR/colors.css"
     echo "  ✓ Wrote $GTK4_DIR/colors.css"
 
-    # Check if gtk.css imports colors.css — warn if not
-    for d in "$GTK3_DIR" "$GTK4_DIR"; do
-        if [[ -f "$d/gtk.css" ]]; then
-            if ! grep -q 'colors.css' "$d/gtk.css" 2>/dev/null; then
-                echo ""
-                echo "  ⚠  $d/gtk.css does not import colors.css"
-                echo "     Add this line to the top of gtk.css:"
-                echo "     @import \"colors.css\";"
-            fi
-        fi
-    done
+    # gtk.css import already handled above — no warning needed
 
     echo ""
     echo "  Backups saved as colors.css.bak"
