@@ -212,8 +212,6 @@ contrast_fg() {
     fi
 }
 
-
-
 # - read the pywal palette and figure out color roles
 echo "[guhwall] reading palette from $COLORS_JSON"
 
@@ -290,8 +288,6 @@ ACCENT_FG=$(contrast_fg "$BEST_ACCENT")
 ERROR_FG=$(contrast_fg "$BEST_RED")
 SUCCESS_FG=$(contrast_fg "$BEST_GREEN")
 WARNING_FG=$(contrast_fg "$BEST_YELLOW")
-
-echo "[guhwall] accent=$BEST_ACCENT error=$BEST_RED success=$BEST_GREEN warning=$BEST_YELLOW"
 
 # - surface elevation (slightly lighter shades for depth)
 WINDOW_BG="$BG"
@@ -435,7 +431,9 @@ if command -v swww >/dev/null 2>&1; then
 fi
 
 # restart waybar so it picks up new colors
-killall -SIGUSR1 waybar
+pkill waybar 2>/dev/null
+waybar &>/dev/null &
+disown
 
 # reload swaync
 swaync-client -rs 2>/dev/null
