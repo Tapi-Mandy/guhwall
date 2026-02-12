@@ -14,6 +14,7 @@ set -euo pipefail
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 COLORS_JSON="${HOME}/.cache/wal/colors.json"
+_COLORS_IS_CUSTOM=false
 GTK3_DIR="${HOME}/.config/gtk-3.0"
 GTK4_DIR="${HOME}/.config/gtk-4.0"
 DRY_RUN=false
@@ -32,7 +33,7 @@ for arg in "$@"; do
             echo "  --help      Show this help"
             exit 0
             ;;
-        *) COLORS_JSON="$arg" ;;
+        *) COLORS_JSON="$arg"; _COLORS_IS_CUSTOM=true ;;
     esac
 done
 
@@ -82,8 +83,18 @@ _generate_fallback_colors() {
 }
 
 if [[ ! -f "$COLORS_JSON" ]]; then
+    if $_COLORS_IS_CUSTOM; then
+        echo "error: colors.json not found at '$COLORS_JSON'" >&2
+        echo "       Check the path and try again." >&2
+        exit 1
+    fi
     _generate_fallback_colors "$COLORS_JSON"
 elif ! jq empty "$COLORS_JSON" 2>/dev/null; then
+    if $_COLORS_IS_CUSTOM; then
+        echo "error: '$COLORS_JSON' is not valid JSON." >&2
+        echo "       Make sure you're passing a pywal colors.json, not an image." >&2
+        exit 1
+    fi
     echo "  ⚠  colors.json at '$COLORS_JSON' is corrupted — regenerating..."
     rm -f "$COLORS_JSON"
     _generate_fallback_colors "$COLORS_JSON"
