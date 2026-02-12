@@ -83,6 +83,10 @@ _generate_fallback_colors() {
 
 if [[ ! -f "$COLORS_JSON" ]]; then
     _generate_fallback_colors "$COLORS_JSON"
+elif ! jq empty "$COLORS_JSON" 2>/dev/null; then
+    echo "  ⚠  colors.json at '$COLORS_JSON' is corrupted — regenerating..."
+    rm -f "$COLORS_JSON"
+    _generate_fallback_colors "$COLORS_JSON"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
