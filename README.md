@@ -53,3 +53,5 @@ pacman -S adw-gtk-theme
 ```
 gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark' && gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```
+
+Or, you could literally just use [guhwm](https://github.com/Tapi-Mandy/guhwm)..
