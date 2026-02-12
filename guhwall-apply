@@ -462,7 +462,7 @@ if command -v swww >/dev/null 2>&1; then
 fi
 
 # restart waybar so it picks up new colors
-killall -SIGUSR waybar
+killall -SIGUSR1 waybar
 waybar &>/dev/null &
 disown
 
