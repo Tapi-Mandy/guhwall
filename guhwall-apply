@@ -1,7 +1,6 @@
 #!/bin/bash
-# guhwall-apply - applies a wallpaper and generates GTK 3/4 theme from it
+# guhwall-apply - applies a wallpaper and generates themes for GTK 3/4, Waybar, and SwayNC from it.
 # usage: guhwall-apply <wallpaper>
-
 set -euo pipefail
 
 wal_img="$1"
@@ -20,18 +19,10 @@ COLORS_JSON="${HOME}/.cache/wal/colors.json"
 GTK3_DIR="${HOME}/.config/gtk-3.0"
 GTK4_DIR="${HOME}/.config/gtk-4.0"
 
-
-# -----------------------------------------------------------------------
-#  step 1: generate pywal16 colors from the wallpaper
-# -----------------------------------------------------------------------
-
+# - generate pywal16 colors from the wallpaper
 wal -i "$wal_img"
 
-
-# -----------------------------------------------------------------------
-#  step 2: make sure colors.json exists and is valid
-# -----------------------------------------------------------------------
-
+# - make sure colors.json exists and is valid
 # generates a fallback palette if pywal didn't create one for some reason
 generate_fallback_colors() {
     local target_dir
@@ -75,11 +66,7 @@ elif ! jq empty "$COLORS_JSON" 2>/dev/null; then
     generate_fallback_colors "$COLORS_JSON"
 fi
 
-
-# -----------------------------------------------------------------------
-#  step 3: color math (pure bash + bc)
-# -----------------------------------------------------------------------
-
+# - color math (pure bash + bc)
 # parse "#AABBCC" into R G B globals (0-255)
 hex_to_rgb() {
     local hex="${1#\#}"
@@ -226,10 +213,8 @@ contrast_fg() {
 }
 
 
-# -----------------------------------------------------------------------
-#  step 4: read the pywal palette and figure out color roles
-# -----------------------------------------------------------------------
 
+# - read the pywal palette and figure out color roles
 echo "[guhwall] reading palette from $COLORS_JSON"
 
 BG=$(jq -r '.special.background' "$COLORS_JSON")
@@ -308,11 +293,7 @@ WARNING_FG=$(contrast_fg "$BEST_YELLOW")
 
 echo "[guhwall] accent=$BEST_ACCENT error=$BEST_RED success=$BEST_GREEN warning=$BEST_YELLOW"
 
-
-# -----------------------------------------------------------------------
-#  step 5: surface elevation (slightly lighter shades for depth)
-# -----------------------------------------------------------------------
-
+# - surface elevation (slightly lighter shades for depth)
 WINDOW_BG="$BG"
 WINDOW_FG="$FG"
 HEADERBAR_BG=$(lighten_hex "$BG" 3)
@@ -324,11 +305,7 @@ POPOVER_BG=$(lighten_hex "$BG" 6)
 DIALOG_BG=$(lighten_hex "$BG" 8)
 NAV_SIDEBAR_BG=$(lighten_hex "$BG" 3)
 
-
-# -----------------------------------------------------------------------
-#  step 6: generate and write the CSS
-# -----------------------------------------------------------------------
-
+# - generate and write the CSS
 generate_css() {
     local version="$1"
     cat <<EOF
@@ -414,7 +391,7 @@ generate_css() {
 @define-color wal_color15 ${WAL_COLORS[15]};
 EOF
 
-    # gtk4 gets an extra rule for the navigation sidebar
+    # GTK4 gets an extra rule for the navigation sidebar
     if [[ "$version" == "gtk4" ]]; then
         cat <<EOF
 
@@ -452,21 +429,15 @@ generate_css "gtk4" > "$GTK4_DIR/colors.css"
 echo "[guhwall] wrote $GTK3_DIR/colors.css"
 echo "[guhwall] wrote $GTK4_DIR/colors.css"
 
-
-# -----------------------------------------------------------------------
-#  step 7: apply wallpaper and reload UI
-# -----------------------------------------------------------------------
-
+# - apply wallpaper and reload UI
 if command -v swww >/dev/null 2>&1; then
     swww img "$wal_img" --transition-type any
 fi
 
 # restart waybar so it picks up new colors
 killall -SIGUSR1 waybar
-waybar &>/dev/null &
-disown
 
 # reload swaync
 swaync-client -rs 2>/dev/null
 
-echo "[guhwall] done"
+echo "[guhwall] done!"
