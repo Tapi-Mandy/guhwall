@@ -3,7 +3,7 @@
 # usage: guhwall-apply <wallpaper>
 set -euo pipefail
 
-wal_img="$1"
+wal_img="${1:-}"
 [ -z "$wal_img" ] && { echo "usage: guhwall-apply <wallpaper>" >&2; exit 1; }
 
 # make sure we have what we need
