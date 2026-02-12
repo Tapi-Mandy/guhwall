@@ -51,33 +51,32 @@ _generate_fallback_colors() {
     local target_dir
     target_dir="$(dirname "$1")"
     mkdir -p "$target_dir"
-    cat > "$1" <<'FALLBACK_EOF'
-{
-    "special": {
-        "background": "#1a1a2e",
-        "foreground": "#e0def4",
-        "cursor": "#e0def4"
-    },
-    "colors": {
-        "color0":  "#1a1a2e",
-        "color1":  "#e06c75",
-        "color2":  "#98c379",
-        "color3":  "#e5c07b",
-        "color4":  "#61afef",
-        "color5":  "#c678dd",
-        "color6":  "#56b6c2",
-        "color7":  "#e0def4",
-        "color8":  "#2e2e42",
-        "color9":  "#e06c75",
-        "color10": "#98c379",
-        "color11": "#e5c07b",
-        "color12": "#61afef",
-        "color13": "#c678dd",
-        "color14": "#56b6c2",
-        "color15": "#e0def4"
-    }
-}
-FALLBACK_EOF
+    printf '%s\n' \
+        '{' \
+        '  "special": {' \
+        '    "background": "#1a1a2e",' \
+        '    "foreground": "#e0def4",' \
+        '    "cursor": "#e0def4"' \
+        '  },' \
+        '  "colors": {' \
+        '    "color0": "#1a1a2e",' \
+        '    "color1": "#e06c75",' \
+        '    "color2": "#98c379",' \
+        '    "color3": "#e5c07b",' \
+        '    "color4": "#61afef",' \
+        '    "color5": "#c678dd",' \
+        '    "color6": "#56b6c2",' \
+        '    "color7": "#e0def4",' \
+        '    "color8": "#2e2e42",' \
+        '    "color9": "#e06c75",' \
+        '    "color10": "#98c379",' \
+        '    "color11": "#e5c07b",' \
+        '    "color12": "#61afef",' \
+        '    "color13": "#c678dd",' \
+        '    "color14": "#56b6c2",' \
+        '    "color15": "#e0def4"' \
+        '  }' \
+        '}' > "$1"
     echo "  ⚠  colors.json not found — generated fallback palette at $1"
     echo "     Run 'wal -i <wallpaper>' for real wallpaper-based colors."
 }
