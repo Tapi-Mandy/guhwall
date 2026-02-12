@@ -13,7 +13,7 @@ source=("guhwall"
         "guhwall.png")
 
 sha256sums=('000c6b234117932d442ed0515ce9bb9b9e8db1bd4c48b046820c03518c01a898'
-            'a6a5bb02dfbc042eed66bd319f1f2b68311d6879d2bdac9de1293879f9ab9fe1'
+            'e240cdd8aa0e7e23bb6cf5eee0ffa6f8b027b3750b91521a786ba8c5abacb577'
             'f8139e21d5ff2cf4de2a477084ccedadc3882c9f53695531dde623341c2bc63d')
 
 package() {
