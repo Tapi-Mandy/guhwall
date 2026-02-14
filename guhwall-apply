@@ -14,24 +14,15 @@ for cmd in jq bc; do
     fi
 done
 
-# First-run setup (apply recommended GTK dark preference once)
-CONFIG_DIR="${HOME}/.config/guhwall"
-FIRST_RUN_FLAG="${CONFIG_DIR}/first_run_done"
+theme=$(gsettings get org.gnome.desktop.interface gtk-theme)
+scheme=$(gsettings get org.gnome.desktop.interface color-scheme)
 
-if [[ ! -f "$FIRST_RUN_FLAG" ]]; then
-    echo "[guhwall] first run detected – applying recommended GTK settings"
+if [ "$theme" != "'adw-gtk3-dark'" ]; then
+    gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+fi
 
-    if command -v gsettings >/dev/null 2>&1; then
-        gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark' || true
-        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || true
-    else
-        echo "[guhwall] gsettings not found, skipping"
-    fi
-
-    mkdir -p "$CONFIG_DIR"
-    touch "$FIRST_RUN_FLAG"
-
-    echo "[guhwall] first-run setup complete"
+if [ "$scheme" != "'prefer-dark'" ]; then
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 fi
 # paths
 COLORS_JSON="${HOME}/.cache/wal/colors.json"
